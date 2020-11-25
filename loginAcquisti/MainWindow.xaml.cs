@@ -42,7 +42,7 @@ namespace loginAcquisti
             utente = txtUtente.Text;
             string pass = txtPassword.Text;
 
-            if(utente !="" && utente != null && pass == PASSWORD)
+            if (utente != "" && utente != null && pass == PASSWORD)
             {
                 txtUtente.IsEnabled = false;
                 txtPassword.IsEnabled = false;
@@ -53,21 +53,91 @@ namespace loginAcquisti
                 cmbProdotto.IsEnabled = true;
                 btnPulisci.IsEnabled = true;
                 btnStampa.IsEnabled = true;
-                ltbRisultato.IsEnabled = true;
-                btnRimuoviSelezione.IsEnabled = true;
             }
-            else if(utente == "" || utente == null)
+            else if (utente == "" || utente == null)
             {
-                MessageBox.Show("Inserire un utente valido","", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show("Inserire un utente valido", "RITENTA", MessageBoxButton.OK, MessageBoxImage.Error);
                 txtUtente.Text = "";
                 txtPassword.Text = "";
                 txtUtente.Focus();
             }
-            else if(pass != PASSWORD)
+            else if (pass != PASSWORD)
             {
-                MessageBox.Show("Password errata", "", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                MessageBox.Show("Password errata", "ATTENZIONE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                 txtPassword.Text = "";
                 txtPassword.Focus();
+            }
+        }
+
+        private void cmbProdotto_Loaded(object sender, RoutedEventArgs e)
+        {
+            foreach (string p in prodotti)
+            {
+                cmbProdotto.Items.Add(p);
+            }
+        }
+
+        private void btnStampa_Click(object sender, RoutedEventArgs e)
+        {
+            if (txtQuantita.Text != "" && txtPrezzo.Text != "" && cmbProdotto.SelectedIndex >= 0)
+            {
+                try
+                {
+                    int quantità = int.Parse(txtQuantita.Text);
+                    double prezzo = double.Parse(txtPrezzo.Text);
+
+                    double totale = quantità * prezzo;
+
+                    ltbRisultato.Items.Add($"Il cliente {txtUtente.Text} ha acquistato il prodotto {cmbProdotto.SelectedItem} per un totale di {totale}€");
+
+                    txtQuantita.Text = "";
+                    txtPrezzo.Text = "";
+                    cmbProdotto.SelectedIndex = -1;
+
+                    ltbRisultato.IsEnabled = true;
+                    btnRimuoviSelezione.IsEnabled = true;
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show(ex.Message,"ATTENZIONE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                    txtQuantita.Text = "";
+                    txtPrezzo.Text = "";
+                    cmbProdotto.SelectedIndex = -1;
+                }
+            }
+            else
+            {
+                MessageBox.Show("Inserisci tutti i valori!", "ATTENZIONE", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+
+                txtQuantita.Text = "";
+                txtPrezzo.Text = "";
+                cmbProdotto.SelectedIndex = -1;
+            }
+        }
+
+        private void btnPulisci_Click(object sender, RoutedEventArgs e)
+        {
+            txtQuantita.Text = "";
+            txtPrezzo.Text = "";
+            cmbProdotto.SelectedIndex = -1;
+        }
+
+        private void btnRimuoviSelezione_Click(object sender, RoutedEventArgs e)
+        {
+            int selezione = ltbRisultato.SelectedIndex;
+            if (selezione >= 0)
+            {
+                ltbRisultato.Items.RemoveAt(selezione);
+            }
+            else
+            {
+                MessageBox.Show("Non è stato selezionato nessun elemento", "ERRORE", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            if (ltbRisultato.Items.Count == 0)
+            {
+                ltbRisultato.IsEnabled = false;
+                btnRimuoviSelezione.IsEnabled = false;
             }
         }
     }
